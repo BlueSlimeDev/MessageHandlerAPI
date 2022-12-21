@@ -1,5 +1,7 @@
 # MessageHandlerAPI | THE LIGHTWEIGHT MESSAGE HANDLER
 
+[![](https://jitpack.io/v/BlueSlimeDev/MessageHandlerAPI.svg)](https://jitpack.io/#BlueSlimeDev/MessageHandlerAPI)
+
 ___
 
 * Support from 1.7.x to 1.19.x
@@ -10,6 +12,26 @@ ___
 * Messages with components
 
 ___
+
+Maven Usage (With jitpack):
+```XML
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+```
+
+Dependency:
+```XML
+        <dependency>
+            <groupId>com.github.BlueSlimeDev</groupId>
+            <artifactId>MessageHandlerAPI</artifactId>
+            <version>TAG</version>
+            <!-- TAG = latest version, for example:
+            <version>0.2</version>
+            -->
+        </dependency>
+```
 
 
 ## Example Usages:
