@@ -1,5 +1,7 @@
 package me.blueslime.messagehandler.types.bossbar.legacy;
 
+import me.blueslime.messagehandler.reflection.BukkitEnum;
+import me.blueslime.messagehandler.reflection.MinecraftEnum;
 import me.blueslime.messagehandler.types.bossbar.BossBarHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,23 +12,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class LegacyBossBar extends BossBarHandler {
-
-    private Class<?> craftPlayerClass;
-    private Class<?> entityWither;
-
-    private Class<?> entitySpawn;
-
-    private Class<?> entityDestroy;
-
-    private Class<?> craftWorld;
-
-    private Class<?> worldServer;
-
     private Method worldHandler;
 
     private Method playerHandler;
-
-    private Class<?> packet;
 
     private Method SET_INVISIBILITY;
     private Method SET_LOCATION;
@@ -35,44 +23,39 @@ public class LegacyBossBar extends BossBarHandler {
     private Method SET_NAME;
 
     public LegacyBossBar() {
-        String MINECRAFT_PATH = "net.minecraft.server." + MINECRAFT_VERSION + ".";
-        String BUKKIT_MAIN_PATH = "org.bukkit.craftbukkit.";
-        String BUKKIT_PATH = BUKKIT_MAIN_PATH + MINECRAFT_VERSION + ".";
-
-
-        boolean notFoundCraft = false;
-
         try {
-            craftPlayerClass = Class.forName(BUKKIT_PATH + "entity.CraftPlayer");
-        } catch (Exception ignored) {
-            notFoundCraft = true;
-        }
+            playerHandler = BukkitEnum.CRAFT_PLAYER.getProvided().getDeclaredMethod("getHandle");
+            worldHandler = BukkitEnum.CRAFT_WORLD.getProvided().getDeclaredMethod("getHandle");
 
-        try {
-            if (notFoundCraft) {
-                craftPlayerClass = Class.forName(BUKKIT_MAIN_PATH + "CraftPlayer");
-            }
+            SET_INVISIBILITY = MinecraftEnum.WITHER.getProvided()
+                    .getMethod(
+                            "setInvisible",
+                            Boolean.class
+                    );
 
-            entityWither = Class.forName(MINECRAFT_PATH + "EntityWither");
+            SET_LOCATION = MinecraftEnum.WITHER.getProvided()
+                    .getMethod(
+                            "setLocation",
+                            Double.class,
+                            Double.class,
+                            Double.class,
+                            Float.class,
+                            Float.class
+                    );
 
-            entitySpawn = Class.forName(MINECRAFT_PATH + "PacketPlayOutSpawnEntityLiving");
+            SET_HEALTH = MinecraftEnum.WITHER.getProvided().getMethod(
+                    "setHealth",
+                    Float.class
+            );
 
-            entityDestroy = Class.forName(MINECRAFT_PATH + "PacketPlayOutEntityDestroy");
+            GET_HEALTH = MinecraftEnum.WITHER.getProvided().getMethod("getMaxHealth");
 
-            craftWorld = Class.forName(BUKKIT_PATH + "CraftWorld");
+            SET_NAME = MinecraftEnum.WITHER.getProvided()
+                    .getMethod(
+                            "setCustomName",
+                            String.class
+                    );
 
-            packet = Class.forName(MINECRAFT_PATH + "Packet");
-
-            worldServer = Class.forName(MINECRAFT_PATH + "WorldServer");
-
-            playerHandler = craftPlayerClass.getDeclaredMethod("getHandle");
-            worldHandler = craftWorld.getDeclaredMethod("getHandle");
-
-            SET_INVISIBILITY = entityWither.getMethod("setInvisible", Boolean.class);
-            SET_LOCATION = entityWither.getMethod("setLocation", Double.class, Double.class, Double.class, Float.class, Float.class);
-            SET_HEALTH = entityWither.getMethod("setHealth", Float.class);
-            GET_HEALTH = entityWither.getMethod("getMaxHealth");
-            SET_NAME = entityWither.getMethod("setCustomName", String.class);
         } catch (Exception exception) {
             Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Can't create boss bar for this version");
             Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Are you using a super legacy version?");
@@ -93,8 +76,8 @@ public class LegacyBossBar extends BossBarHandler {
 
             Object wither = fromPlayer(
                     player,
-                    entityWither.getConstructor(
-                            worldServer
+                    MinecraftEnum.WITHER.getProvided().getConstructor(
+                            MinecraftEnum.WORLD_SERVER.getProvided()
                     ).newInstance(
                             worldHandler.invoke(
                                     getCraftWorld(player.getWorld())
@@ -133,8 +116,8 @@ public class LegacyBossBar extends BossBarHandler {
                     0
             );
 
-            Object packet = entitySpawn.getConstructor(
-                    entityWither
+            Object packet = MinecraftEnum.ENTITY_SPAWN.getProvided().getConstructor(
+                    MinecraftEnum.WITHER.getProvided()
             ).newInstance(
                     wither
             );
@@ -156,11 +139,11 @@ public class LegacyBossBar extends BossBarHandler {
         }
 
         try {
-            int id = (int) entityWither.getMethod("getId").invoke(
+            int id = (int) MinecraftEnum.WITHER.getProvided().getMethod("getId").invoke(
                     wither
             );
 
-            Object packet = entityDestroy.getConstructor(Integer.class).newInstance(id);
+            Object packet = MinecraftEnum.ENTITY_DESTROY.getProvided().getConstructor(Integer.class).newInstance(id);
 
             sendPacket(player, packet);
         } catch (Exception exception) {
@@ -176,7 +159,7 @@ public class LegacyBossBar extends BossBarHandler {
 
             Object obtainConnection = playerConnectionField.get(connection);
 
-            Method sendPacket = obtainConnection.getClass().getDeclaredMethod("sendPacket", this.packet);
+            Method sendPacket = obtainConnection.getClass().getDeclaredMethod("sendPacket", MinecraftEnum.PACKET.getProvided());
 
             sendPacket.invoke(
                     obtainConnection,
@@ -186,10 +169,10 @@ public class LegacyBossBar extends BossBarHandler {
     }
 
     private Object getCraftWorld(World world) {
-        return craftWorld.cast(world);
+        return BukkitEnum.CRAFT_WORLD.getProvided().cast(world);
     }
 
     private Object getCraftPlayer(Player player) {
-        return craftPlayerClass.cast(player);
+        return BukkitEnum.CRAFT_PLAYER.getProvided().cast(player);
     }
 }
