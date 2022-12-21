@@ -30,9 +30,9 @@ public final class MessageHandlerAPI {
         public static boolean isBukkit() {
             try {
                 Class.forName("org.bukkit.entity.Player$Spigot");
-                return true;
-            } catch (Throwable ignored) {
                 return false;
+            } catch (Throwable ignored) {
+                return true;
             }
         }
 

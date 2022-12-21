@@ -1,7 +1,11 @@
 package me.blueslime.messagehandler.reflection;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.EnumMap;
 
 public class ReflectionHandlerCache {
@@ -11,10 +15,14 @@ public class ReflectionHandlerCache {
 
     private final EnumMap<BukkitEnum, Class<?>> bukkitMap = new EnumMap<>(BukkitEnum.class);
 
+    private Method playerHandler;
+
+    private final String version;
+
     public ReflectionHandlerCache() {
         String name = Bukkit.getServer().getClass().getPackage().getName();
 
-        String version = name.substring(
+        this.version = name.substring(
                 name.lastIndexOf(".") + 1
         );
 
@@ -33,11 +41,25 @@ public class ReflectionHandlerCache {
                     minecraft
             );
         }
+
+        try {
+            playerHandler = bukkitMap.get(BukkitEnum.CRAFT_PLAYER).getDeclaredMethod("getHandle");
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void initialize(String path, String version, MinecraftEnum minecraft) {
         for (String location : minecraft.getPath()) {
             try {
+                if (minecraft == MinecraftEnum.CHAT_SERIALIZER) {
+                    location = location.replace(
+                            "[serializer]",
+                            version.equalsIgnoreCase("v1_8_R1") ?
+                                    "ChatSerializer" :
+                                    "ChatComponentText"
+                    );
+                }
                 minecraftMap.put(
                         minecraft,
                         Class.forName(
@@ -85,11 +107,32 @@ public class ReflectionHandlerCache {
         return null;
     }
 
-    private static String getVersion() {
-        String name = Bukkit.getServer().getClass().getPackage().getName();
+    public static String getVersion() {
+        return REFLECTION_HANDLER_CACHE.version;
+    }
 
-        return name.substring(
-                name.lastIndexOf(".") + 1
-        );
+    public static void sendPacket(Player player, Object packet) {
+        try {
+            Object connection = REFLECTION_HANDLER_CACHE.playerHandler.invoke(getCraftPlayer(player));
+
+            Field playerConnectionField = connection.getClass().getDeclaredField("playerConnection");
+
+            Object obtainConnection = playerConnectionField.get(connection);
+
+            Method sendPacket = obtainConnection.getClass().getDeclaredMethod("sendPacket", MinecraftEnum.PACKET.getProvided());
+
+            sendPacket.invoke(
+                    obtainConnection,
+                    packet
+            );
+        } catch (Exception ignored) {}
+    }
+
+    public static Object getCraftWorld(World world) {
+        return BukkitEnum.CRAFT_WORLD.getProvided().cast(world);
+    }
+
+    public static Object getCraftPlayer(Player player) {
+        return BukkitEnum.CRAFT_PLAYER.getProvided().cast(player);
     }
 }

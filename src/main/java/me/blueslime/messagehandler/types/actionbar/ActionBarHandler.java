@@ -1,5 +1,6 @@
 package me.blueslime.messagehandler.types.actionbar;
 
+import me.blueslime.messagehandler.MessageHandlerAPI;
 import me.blueslime.messagehandler.MessageType;
 import me.blueslime.messagehandler.types.actionbar.latest.DefaultActionBar;
 import me.blueslime.messagehandler.types.actionbar.legacy.LegacyActionBar;
@@ -27,7 +28,7 @@ public abstract class ActionBarHandler implements MessageType {
     private static ActionBarHandler initializeInstance() {
         String version = MINECRAFT_VERSION;
 
-        if (version == null) {
+        if (version == null || !MessageHandlerAPI.Executor.IS_BUKKIT) {
             return new DefaultActionBar();
         }
 

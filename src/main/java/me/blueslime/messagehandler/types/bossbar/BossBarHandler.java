@@ -1,6 +1,7 @@
 package me.blueslime.messagehandler.types.bossbar;
 
 import me.blueslime.messagehandler.MessageType;
+import me.blueslime.messagehandler.reflection.ReflectionHandlerCache;
 import me.blueslime.messagehandler.types.bossbar.latest.DefaultBossBar;
 import me.blueslime.messagehandler.types.bossbar.legacy.LegacyBossBar;
 import org.bukkit.Bukkit;
@@ -15,8 +16,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public abstract class BossBarHandler implements MessageType {
     public static final ConcurrentHashMap<UUID, Object> WITHER_MAP = new ConcurrentHashMap<>();
-
-    public static final String MINECRAFT_VERSION = extractNMSVersion();
 
     private static final BossBarHandler INSTANCE = initializeInstance();
 
@@ -68,7 +67,7 @@ public abstract class BossBarHandler implements MessageType {
     }
 
     private static BossBarHandler initializeInstance() {
-        String version = MINECRAFT_VERSION;
+        String version = ReflectionHandlerCache.getVersion();
 
         if (version == null) {
             return new DefaultBossBar();
@@ -89,15 +88,5 @@ public abstract class BossBarHandler implements MessageType {
                 version.equalsIgnoreCase("v1_8_R1") ||
                 version.equalsIgnoreCase("v1_8_R2") ||
                 version.equalsIgnoreCase("v1_8_R3");
-    }
-
-    private static String extractNMSVersion() {
-        Matcher matcher = Pattern.compile("v\\d+_\\d+_R\\d+").matcher(Bukkit.getServer().getClass().getPackage().getName());
-
-        if (matcher.find()) {
-            return matcher.group();
-        }
-
-        return "v1_19_R1";
     }
 }

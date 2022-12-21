@@ -1,20 +1,32 @@
 package me.blueslime.messagehandler.types.titles;
 
+import me.blueslime.messagehandler.MessageHandlerAPI;
 import me.blueslime.messagehandler.MessageType;
+import me.blueslime.messagehandler.reflection.ReflectionHandlerCache;
 import me.blueslime.messagehandler.types.titles.latest.DefaultTitles;
 import me.blueslime.messagehandler.types.titles.legacy.LegacyTitles;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public abstract class TitlesHandler implements MessageType {
-    public static final String MINECRAFT_VERSION = extractNMSVersion();
+    public static final String MINECRAFT_VERSION = ReflectionHandlerCache.getVersion();
 
     private final static TitlesHandler INSTANCE = initializeInstance();
 
-    public abstract void send(Player player, String message);
+    public void send(Player player, String message) {
+        String[] split = message.split("<subtitle>");
+
+        String sub;
+
+        if (split.length == 2) {
+            sub = split[1];
+        } else {
+            sub = "";
+        }
+
+        send(player, 20, 20, 20, colorize(split[0]), colorize(sub));
+    }
+
+    public abstract void send(Player player, int fadeInTime, int showTime, int fadeOutTime, String title, String subtitle);
 
     public void execute(Player player, String text) {
         send(player, text);
@@ -25,13 +37,12 @@ public abstract class TitlesHandler implements MessageType {
     }
 
     private static TitlesHandler initializeInstance() {
-        String version = MINECRAFT_VERSION;
 
-        if (version == null) {
+        if (MINECRAFT_VERSION == null) {
             return new DefaultTitles();
         }
 
-        if (isLegacy(version)) {
+        if (MessageHandlerAPI.Executor.IS_BUKKIT) {
             return new LegacyTitles();
         }
 
@@ -42,24 +53,9 @@ public abstract class TitlesHandler implements MessageType {
         return INSTANCE;
     }
 
-    private static boolean isLegacy(String version) {
-        return version.equalsIgnoreCase("v1_7_R0") ||
-                version.equalsIgnoreCase("v1_7_R1") ||
-                version.equalsIgnoreCase("v1_7_R2") ||
-                version.equalsIgnoreCase("v1_7_R3") ||
-                version.equalsIgnoreCase("v1_8_R1") ||
+    protected static boolean isLegacy(String version) {
+        return version.equalsIgnoreCase("v1_8_R1") ||
                 version.equalsIgnoreCase("v1_8_R2") ||
                 version.equalsIgnoreCase("v1_8_R3");
     }
-
-    private static String extractNMSVersion() {
-        Matcher matcher = Pattern.compile("v\\d+_\\d+_R\\d+").matcher(Bukkit.getServer().getClass().getPackage().getName());
-
-        if (matcher.find()) {
-            return matcher.group();
-        }
-
-        return "v1_19_R1";
-    }
-
 }

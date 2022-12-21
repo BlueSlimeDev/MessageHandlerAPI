@@ -27,6 +27,17 @@ public abstract class MessageHandler implements MessageType {
         return new DefaultMessage();
     }
 
+    /**
+     * Use this method to send {@link net.md_5.bungee.api.chat.BaseComponent}
+     * @return DefaultMessage as MessageHandler
+     */
+    public DefaultMessage asComponentSender() {
+        if (INSTANCE instanceof DefaultMessage) {
+            return (DefaultMessage) INSTANCE;
+        }
+        return new DefaultMessage();
+    }
+
     public static MessageHandler getInstance() {
         return INSTANCE;
     }
