@@ -28,7 +28,7 @@ public abstract class ActionBarHandler implements MessageType {
     private static ActionBarHandler initializeInstance() {
         String version = MINECRAFT_VERSION;
 
-        if (version == null || !MessageHandlerAPI.Executor.IS_BUKKIT) {
+        if (version == null || (!MessageHandlerAPI.Executor.IS_BUKKIT && !isLegacy(version))) {
             return new DefaultActionBar();
         }
 
