@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Method;
 
 public class LegacyBossBar extends BossBarHandler {
+    private boolean tryFirst = false;
+    private boolean trySecond = false;
     private Method worldHandler;
 
     private Method SET_INVISIBILITY;
@@ -70,16 +72,65 @@ public class LegacyBossBar extends BossBarHandler {
                 percentage = (float) 0.001;
             }
 
-            Object wither = fromPlayer(
-                    player,
-                    MinecraftEnum.WITHER.getProvided().getConstructor(
-                            MinecraftEnum.WORLD_SERVER.getProvided()
-                    ).newInstance(
-                            worldHandler.invoke(
-                                    ReflectionHandlerCache.getCraftWorld(player.getWorld())
+            Object wither;
+
+            if (!tryFirst)  {
+                try {
+                    wither = fromPlayer(
+                            player,
+                            MinecraftEnum.WITHER.getProvided().getConstructor(
+                                    MinecraftEnum.WORLD_SERVER.getProvided()
+                            ).newInstance(
+                                    worldHandler.invoke(
+                                            ReflectionHandlerCache.getCraftWorld(player.getWorld())
+                                    )
                             )
-                    )
-            );
+                    );
+                } catch (Exception ignored) {
+                    tryFirst = true;
+                    send(player, message, percentage);
+                    return;
+                }
+            } else {
+                if (!trySecond) {
+                    try {
+                        wither = fromPlayer(
+                                player,
+                                MinecraftEnum.WITHER.getProvided().getConstructor(
+                                        MinecraftEnum.WORLD.getProvided()
+                                ).newInstance(
+                                        worldHandler.invoke(
+                                                ReflectionHandlerCache.getCraftWorld(player.getWorld())
+                                        )
+                                )
+                        );
+                    } catch (Exception ignored) {
+                        trySecond = true;
+                        send(player, message, percentage);
+                        return;
+                    }
+                } else {
+                    try {
+                        Object casted = MinecraftEnum.WORLD.getProvided().cast(
+                                worldHandler.invoke(
+                                        ReflectionHandlerCache.getCraftWorld(player.getWorld())
+                                )
+                        );
+
+                        wither = fromPlayer(
+                                player,
+                                MinecraftEnum.WITHER.getProvided().getConstructor(
+                                        MinecraftEnum.WORLD.getProvided()
+                                ).newInstance(
+                                        casted
+                                )
+                        );
+                    } catch (Exception ignored) {
+                        Bukkit.getServer().getLogger().info("Can't initialize bossBar in this version (" + ReflectionHandlerCache.getVersion() + "), wither method not found");
+                        return;
+                    }
+                }
+            }
 
             Location location = obtainWitherLocation(player.getLocation());
 

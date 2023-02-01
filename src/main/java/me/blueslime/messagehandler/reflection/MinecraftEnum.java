@@ -8,6 +8,7 @@ public enum MinecraftEnum {
     PLAY_OUT_CHAT("[path].[version].PacketPlayOutChat"),
     CHAT_SERIALIZER("[path].[version].[serializer]"),
     WORLD_SERVER("[path].[version].WorldServer"),
+    WORLD("[path].[version].World"),
     WITHER("[path].[version].EntityWither"),
     PACKET("[path].[version].Packet");
 

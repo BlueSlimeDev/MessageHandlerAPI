@@ -4,14 +4,11 @@ import me.blueslime.messagehandler.MessageType;
 import me.blueslime.messagehandler.reflection.ReflectionHandlerCache;
 import me.blueslime.messagehandler.types.bossbar.latest.DefaultBossBar;
 import me.blueslime.messagehandler.types.bossbar.legacy.LegacyBossBar;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public abstract class BossBarHandler implements MessageType {
