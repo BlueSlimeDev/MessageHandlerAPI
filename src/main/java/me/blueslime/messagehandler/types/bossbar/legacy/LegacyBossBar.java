@@ -96,6 +96,42 @@ public class LegacyBossBar extends BossBarHandler {
                         );
 
             } catch (Exception exception) {
+                load(2);
+            }
+        } else if (id == 2) {
+            try {
+                worldHandler = BukkitEnum.CRAFT_WORLD.getProvided().getDeclaredMethod("getHandle");
+
+                SET_INVISIBILITY = MinecraftEnum.ENTITY_LIVING.getProvided()
+                        .getMethod(
+                                "setInvisible",
+                                Boolean.class
+                        );
+
+                SET_LOCATION = MinecraftEnum.ENTITY.getProvided()
+                        .getMethod(
+                                "setLocation",
+                                Double.class,
+                                Double.class,
+                                Double.class,
+                                Float.class,
+                                Float.class
+                        );
+
+                SET_HEALTH = MinecraftEnum.ENTITY_LIVING.getProvided().getMethod(
+                        "setHealth",
+                        Float.class
+                );
+
+                GET_HEALTH = MinecraftEnum.ENTITY_LIVING.getProvided().getMethod("getMaxHealth");
+
+                SET_NAME = MinecraftEnum.ENTITY.getProvided()
+                        .getMethod(
+                                "setCustomName",
+                                String.class
+                        );
+
+            } catch (Exception exception) {
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Can't create boss bar for this version");
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Are you using a super legacy version?");
 
