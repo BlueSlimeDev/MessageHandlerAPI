@@ -174,8 +174,6 @@ public class LegacyBossBar extends BossBarHandler {
             } catch (Exception exception) {
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Can't create boss bar for this version");
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Are you using a super legacy version?");
-
-                exception.printStackTrace();
                 failure = 2;
             }
         }
