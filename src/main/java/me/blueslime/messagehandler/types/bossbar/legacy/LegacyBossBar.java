@@ -20,6 +20,7 @@ public class LegacyBossBar extends BossBarHandler {
     private Method SET_HEALTH;
     private Method GET_HEALTH;
     private Method SET_NAME;
+    private int failure = 0;
 
     public LegacyBossBar() {
         load(0);
@@ -67,7 +68,7 @@ public class LegacyBossBar extends BossBarHandler {
                 worldHandler = BukkitEnum.CRAFT_WORLD.getProvided().getDeclaredMethod("getHandle");
 
                 SET_INVISIBILITY = MinecraftEnum.ENTITY.getProvided()
-                        .getMethod(
+                        .getDeclaredMethod(
                                 "setInvisible",
                                 Boolean.class
                         );
@@ -95,7 +96,7 @@ public class LegacyBossBar extends BossBarHandler {
                                 String.class
                         );
 
-            } catch (Exception exception) {
+            } catch (Exception ignored) {
                 load(2);
             }
         } else if (id == 2) {
@@ -131,11 +132,51 @@ public class LegacyBossBar extends BossBarHandler {
                                 String.class
                         );
 
+            } catch (Exception ignored) {
+                load(3);
+            }
+        } else if (id == 3) {
+            try {
+                worldHandler = BukkitEnum.CRAFT_WORLD.getProvided().getDeclaredMethod("getHandle");
+
+                failure = 1;
+
+                SET_INVISIBILITY = MinecraftEnum.ENTITY.getProvided()
+                        .getDeclaredMethod(
+                                "b",
+                                int.class,
+                                boolean.class
+                        );
+
+                SET_LOCATION = MinecraftEnum.ENTITY.getProvided()
+                        .getMethod(
+                                "setLocation",
+                                Double.class,
+                                Double.class,
+                                Double.class,
+                                Float.class,
+                                Float.class
+                        );
+
+                SET_HEALTH = MinecraftEnum.ENTITY_LIVING.getProvided().getMethod(
+                        "setHealth",
+                        Float.class
+                );
+
+                GET_HEALTH = MinecraftEnum.ENTITY_LIVING.getProvided().getMethod("getMaxHealth");
+
+                SET_NAME = MinecraftEnum.ENTITY.getProvided()
+                        .getMethod(
+                                "setCustomName",
+                                String.class
+                        );
+
             } catch (Exception exception) {
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Can't create boss bar for this version");
                 Bukkit.getServer().getLogger().info("[MessageHandlerAPI] Are you using a super legacy version?");
 
                 exception.printStackTrace();
+                failure = 2;
             }
         }
     }
@@ -143,6 +184,9 @@ public class LegacyBossBar extends BossBarHandler {
 
     @Override
     public void send(Player player, String message, float percentage) {
+        if (failure == 2) {
+            return;
+        }
         try {
             if (percentage <= 0) {
                 percentage = (float) 0.001;
@@ -225,10 +269,18 @@ public class LegacyBossBar extends BossBarHandler {
                     message
             );
 
-            SET_INVISIBILITY.invoke(
-                    wither,
-                    true
-            );
+            if (failure != 1) {
+                SET_INVISIBILITY.invoke(
+                        wither,
+                        true
+                );
+            } else {
+                SET_INVISIBILITY.invoke(
+                        wither,
+                        5,
+                        true
+                );
+            }
 
             SET_LOCATION.invoke(
                     wither,
