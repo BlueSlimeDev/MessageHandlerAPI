@@ -4,7 +4,7 @@
 
 ___
 
-* Support from 1.7.x to 1.19.x
+* Support from 1.7.x to 1.21.x
 * ActionBar
 * BossBar
 * Titles
@@ -21,8 +21,17 @@ Maven Usage (With jitpack):
         </repository>
 ```
 
+# REQUIRES UTILITIES API FROM BLUE SLIME DEV
+
 Dependency:
 ```XML
+    <dependencies>
+        <dependency>
+            <groupId>com.github.BlueSlimeDev</groupId>
+            <artifactId>UtilitiesAPI</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.BlueSlimeDev</groupId>
             <artifactId>MessageHandlerAPI</artifactId>
@@ -31,6 +40,7 @@ Dependency:
             <version>0.6</version>
             -->
         </dependency>
+    </dependencies>
 ```
 
 

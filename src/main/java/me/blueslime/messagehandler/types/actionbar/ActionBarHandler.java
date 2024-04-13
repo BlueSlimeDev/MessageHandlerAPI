@@ -48,9 +48,11 @@ public abstract class ActionBarHandler implements MessageType {
                 version.equalsIgnoreCase("v1_7_R1") ||
                 version.equalsIgnoreCase("v1_7_R2") ||
                 version.equalsIgnoreCase("v1_7_R3") ||
+                version.equalsIgnoreCase("v1_7_R4") ||
                 version.equalsIgnoreCase("v1_8_R1") ||
                 version.equalsIgnoreCase("v1_8_R2") ||
-                version.equalsIgnoreCase("v1_8_R3");
+                version.equalsIgnoreCase("v1_8_R3") ||
+                version.equalsIgnoreCase("v1_8_R4");
     }
 
     private static String extractNMSVersion() {

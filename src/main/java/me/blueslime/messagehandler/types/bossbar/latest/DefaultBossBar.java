@@ -11,12 +11,12 @@ public class DefaultBossBar extends BossBarHandler {
     @Override
     public void send(Player player, String message, float percentage) {
         BossBar bar = (BossBar) fromPlayer(
-                player,
-                Bukkit.createBossBar(
-                        message,
-                        BarColor.BLUE,
-                        BarStyle.SOLID
-                )
+            player,
+            Bukkit.createBossBar(
+                message,
+                BarColor.BLUE,
+                BarStyle.SOLID
+            )
         );
 
         float calculate = percentage / 100;

@@ -7,7 +7,7 @@ public class LegacyMessages extends MessageHandler {
     @Override
     public void send(Player player, String message) {
         player.sendMessage(
-                colorize(message)
+            colorize(message)
         );
     }
 }

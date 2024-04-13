@@ -85,7 +85,9 @@ public abstract class TitlesHandler implements MessageType {
     protected static boolean isLegacy(String version) {
         return version.equalsIgnoreCase("v1_8_R1") ||
                 version.equalsIgnoreCase("v1_8_R2") ||
-                version.equalsIgnoreCase("v1_8_R3");
+                version.equalsIgnoreCase("v1_8_R3") ||
+                version.equalsIgnoreCase("v1_8_R4") ||
+                version.equalsIgnoreCase("v1_8_R0");
     }
 
     public boolean isNumber(String argument) {

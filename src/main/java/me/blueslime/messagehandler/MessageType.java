@@ -4,7 +4,7 @@ import me.blueslime.messagehandler.types.actionbar.ActionBarHandler;
 import me.blueslime.messagehandler.types.bossbar.BossBarHandler;
 import me.blueslime.messagehandler.types.messages.MessageHandler;
 import me.blueslime.messagehandler.types.titles.TitlesHandler;
-import org.bukkit.ChatColor;
+import me.blueslime.utilitiesapi.text.TextUtilities;
 import org.bukkit.entity.Player;
 
 public interface MessageType {
@@ -26,7 +26,7 @@ public interface MessageType {
     void execute(Player player, String text);
 
     default String colorize(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
+        return TextUtilities.colorize(text);
     }
 
 }

@@ -9,15 +9,15 @@ public class DefaultMessage extends MessageHandler {
     @Override
     public void send(Player player, String message) {
         player.spigot().sendMessage(
-                new TextComponent(
-                        colorize(message)
-                )
+            new TextComponent(
+                colorize(message)
+            )
         );
     }
 
     public void send(Player player, BaseComponent... component) {
         player.spigot().sendMessage(
-                component
+            component
         );
     }
 }

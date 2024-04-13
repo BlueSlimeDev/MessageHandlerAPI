@@ -11,11 +11,11 @@ public final class MessageHandlerAPI {
     public static boolean sendMessage(Player player, String message) {
         if (HAS_PLACEHOLDER_API) {
             return Executor.send(
+                player,
+                PlaceholderParser.parse(
                     player,
-                    PlaceholderParser.parse(
-                            player,
-                            message
-                    )
+                    message
+                )
             );
         }
         return Executor.send(
@@ -63,17 +63,17 @@ public final class MessageHandlerAPI {
 
             if (HAS_PLACEHOLDER_API) {
                 type.execute(
+                    player,
+                    PlaceholderParser.parse(
                         player,
-                        PlaceholderParser.parse(
-                                player,
-                                message
-                        )
+                        message
+                    )
                 );
                 return isBossBar;
             }
             type.execute(
-                    player,
-                    message
+                player,
+                message
             );
             return isBossBar;
         }

@@ -9,12 +9,12 @@ public class DefaultActionBar extends ActionBarHandler {
     @Override
     public void send(Player player, String message) {
         TextComponent component = new TextComponent(
-                message
+            message
         );
 
         player.spigot().sendMessage(
-                ChatMessageType.ACTION_BAR,
-                component
+            ChatMessageType.ACTION_BAR,
+            component
         );
     }
 }
